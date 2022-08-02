@@ -2,36 +2,92 @@ import csv
 import os
 import io
 
-def main_menu():
+def main():
 
-    print(""" 
-    MENU
+    
+    main_menu = '''
     1. List of exercises
     2. Training records
     3. Find
     0. Exit the program
-    """)
+    '''
 
-    users_choice_menu = input("Choose an option: ")
+    exercises_menu = '''
+    1. Add a new exercise
+    2. Back to the main menu
+    0. Exit the program
+    '''
 
-    while users_choice_menu != "0":
+    training_records_menu = '''
+    1. List of training records
+    2. Add a new training record 
+    3. Back to the main menu
+    0. Exit the program
+    '''
 
-        if users_choice_menu == "1":
+    find_menu = '''
+    1. Find an exercise
+    2. Find a training record
+    3. Back to the main menu
+    0. Exit the program
+    '''
 
-            if not list_of_exercises():
-                break
+    while True:
 
-        elif users_choice_menu == "2":
-            training_records_menu()
-            
-        elif users_choice_menu == "3":
-            find_menu()
+        print(main_menu)
+        
+        user_choice = input("Choose an option: ")
+        
+        if user_choice == "1":
 
-        else:
-            print("Invalid option")
-            users_choice_menu = input("Choose an option: ")
-            continue
-        break
+            while True:
+
+                print(exercises_menu)
+
+                user_choice = input("Choose an option: ")
+
+                if user_choice == "1":
+                    add_new_exercise()
+                elif user_choice == "2":
+                    break
+                elif user_choice == "0":
+                    exit()
+
+        elif user_choice == "2":
+
+            while True:
+
+                print(training_records_menu)
+
+                user_choice = input("Choose an option: ")
+
+                if user_choice == "1":
+                    list_training_records()
+                elif user_choice == "2":
+                    add_new_training_record()
+                elif user_choice == "3":
+                    break
+                elif user_choice == "0":
+                    exit()
+
+        elif user_choice == "3":
+
+            while True:
+                print(find_menu)
+                user_choice = input("Choose an option: ")
+
+                if user_choice == "1":
+                    find_exercise()
+                elif user_choice == "2":
+                    find_training_record()
+                elif user_choice == "3":
+                    break
+                elif user_choice == "0":
+                    exit()
+
+        elif user_choice == "0":
+
+            exit()
 
     
 def list_of_exercises():
@@ -43,36 +99,18 @@ def list_of_exercises():
             fieldnames = ["Cviky", "Poznamky"]
             writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
             writer.writeheader()
+        return
     else:
         with open("all_exercises.csv", mode='r') as file:
             csv_file = csv.DictReader(file)
             print("\nSeznam cviku")
             for row in csv_file:
                 print(dict(row))
-
-    print(""" \nList of exercises - menu
-    1. Add a new exercise
-    2. Back to the main menu
-    0. Exit the program
-    """)
-
-    users_choice_exercise = input("Choose an option: ")
-
-    while users_choice_exercise != "0":
-        if users_choice_exercise == "1":
-            new_exercise()
-        elif users_choice_exercise == "2":
-            main_menu()
-        else:
-            print("Invalid option")
-            users_choice_exercise = input("Choose an option: ")
-            continue
-        break
-
-    return False
+        return
+    
         
 
-def new_exercise():
+def add_new_exercise():
 
     print("Add new exercise ")
 
@@ -83,41 +121,18 @@ def new_exercise():
         for exer, note in csv.reader(csv_file):
                 if cvik == exer.lower():
                     print(f"\nExercise cannot be added.\nExercise has already been added: \n\t\t>{exer}, {note}")
-                    break
+                    return
         else:
             with open("all_exercises.csv", mode="a") as csv_file:
                 fieldnames = ["Cviky", "Poznamky"]
                 writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
                 writer.writerow({'Cviky': cvik,'Poznamky': poznamka})
                 print("\nYour new exercise was added.")
-    list_of_exercises()
+            return
 
-
-def training_records_menu():
-    print(""" \nTraining records - menu
-    1. List of training records
-    2. Add a new training record 
-    3. Back to the main menu
-    0. Exit the program
-    """)
-
-    users_choice_training_records = input("Choose an option: ")
-
-
-    while users_choice_training_records != "0":
-        if users_choice_training_records == "1":
-            list_training_records()
-        elif users_choice_training_records == "2":
-            new_training_record()
-        elif users_choice_training_records == "3":
-            main_menu()
-        else:
-            print("Invalid option")
-            users_choice_training_records = input("Choose an option: ")
-            continue
-        break
 
 def list_training_records():
+
     if not os.path.exists("all_training_records.csv"):
         with open("all_training_records.csv", mode="w") as csv_file:
             print("\nCreating new file for training record")
@@ -125,16 +140,18 @@ def list_training_records():
             fieldnames = ["Cviky","Datum", "Pocet serii", "Pocet opakovani", "Poznamky"]
             writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
             writer.writeheader()
+        return
+
     else:
         with open("all_training_records.csv", mode='r') as file:
             csv_file = csv.DictReader(file)
             print("\nList of training records: ")
             for row in csv_file:
                 print(dict(row))
+        return
 
-    training_records_menu()
 
-def new_training_record():
+def add_new_training_record():
     try:
         with open("all_exercises.csv", mode='r') as file:
             csv_file = csv.DictReader(file)
@@ -143,9 +160,6 @@ def new_training_record():
             found = False
 
             for exercise_record in csv_file:
-                if found:
-                    break
-                else:
                     for value in exercise_record.values():
                         if find_request in value:
                             found = True
@@ -162,12 +176,15 @@ def new_training_record():
                                     fieldnames = ["Cviky","Datum", "Pocet serii", "Pocet opakovani", "Poznamky"]
                                     writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
                                     writer.writeheader()
+                                return
+                                    
 
                             else:
                                 with open("all_training_records.csv", mode="a") as csv_file:
                                     fieldnames = ["Cviky","Datum", "Pocet serii", "Pocet opakovani", "Poznamky"]
                                     writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
                                     writer.writerow({'Cviky': record_value,'Datum': date,'Pocet serii':series, 'Pocet opakovani': repeats, 'Poznamky': note})
+                                return
 
     except FileNotFoundError:
         print("No exercises are available yet, to enter a training record, enter an exercise first. ")
@@ -180,32 +197,10 @@ def new_training_record():
             for row in csv_file:
                 print(dict(row))
         print("\nThe exercise you are looking for was not found.\nTo enter a new workout record, it is only possible to use from an existing exercise")
+        return
 
-    training_records_menu()
 
-def find_menu():
-    print(""" \nFind - menu
-    1. Find an exercise
-    2. Find a training record
-    3. Back to the main menu
-    0. Exit the program
-    """)
 
-    users_choice_find_menu = input("Choose an option: ")
-
-    while users_choice_find_menu != "0":
-        if users_choice_find_menu == "1":
-            find_exercise()
-        elif users_choice_find_menu == "2":
-            find_training_record()
-        elif users_choice_find_menu == "3":
-            main_menu()
-        else:
-            print("Invalid option")
-            users_choice_find_menu = input("Choose an option: ")
-            continue
-        break
-            
 def find_exercise():
 
     find_request = input("\nWhat exercise do you find?: ").strip().lower()
@@ -214,32 +209,11 @@ def find_exercise():
         for exer, notes in csv.reader(file):
             if find_request == exer.lower():
                 print(f"\nCvik: {exer} \nPoznamky ke cviku: {notes}")
-                break
+                return
         else:
             print("Exercise has not been found")
+            return
 
-    find_exercise_menu()
-
-
-def find_exercise_menu():
-    print(""" \nFind - menu
-    1. Find another exercise
-    2. Back to the main menu
-    0. Exit the program
-    """)
-
-    users_choice_find = input("Choose an option: ")
-
-    while users_choice_find != "0":
-        if users_choice_find == "1":
-            find_exercise()
-        elif users_choice_find == "2":
-            main_menu()
-        else:
-            print("Invalid option")
-            users_choice_find = input("Choose an option: ")
-            continue
-        break
 
 def find_training_record():
 
@@ -250,33 +224,12 @@ def find_training_record():
 
             if find_request_training_record == exer.lower():
                 print(f"\nCvik: {exer} \nDatum: {date} \nPocet serii: {series} \nPocet opakovani: {repeats} \nPoznamka ke cviku: {note}")
-                break
+                return
 
         else:
             print("The training record you entered was not found")
-
-    find_training_record_menu()
-
-def find_training_record_menu():
-    print(""" \nFind - menu
-    1. Find another training record
-    2. Back to the main menu
-    0. Exit the program
-    """)
-
-    users_choice_find_training_record = input("Choose an option: ")
-
-    while users_choice_find_training_record != "0":
-        if users_choice_find_training_record == "1":
-            find_training_record()
-        elif users_choice_find_training_record == "2":
-            main_menu()
-        else:
-            print("Invalid option")
-            users_choice_find_training_record = input("Choose an option: ")
-            continue
-        break
+            return
 
 
-main_menu()
+main()
 
