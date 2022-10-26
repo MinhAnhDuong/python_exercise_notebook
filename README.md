@@ -1,1 +1,1 @@
-# python_exercise_notebook
+Learning structural programming in python, base topic for other projects.
